@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Skriptec.Core\Skriptec.Core.csproj" />
+    <!-- Runner sa len zostaví (bez referencie na assembly); jeho výstup sa kopíruje vedľa Skriptec.exe -->
+    <ProjectReference Include="..\Skriptec.Runner\Skriptec.Runner.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Target Name="CopyRunnerOutput" AfterTargets="Build">
+    <ItemGroup>
+      <RunnerFiles Include="..\Skriptec.Runner\bin\$(Configuration)\$(TargetFramework)\skriptec-runner.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(RunnerFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEditB" Version="2.5.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Skriptec</AssemblyName>
+    <RootNamespace>Skriptec</RootNamespace>
+  </PropertyGroup>
+
+</Project>

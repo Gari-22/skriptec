@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Skriptec.Core\Skriptec.Core.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>skriptec-runner</AssemblyName>
+    <RootNamespace>Skriptec.Runner</RootNamespace>
+  </PropertyGroup>
+
+</Project>

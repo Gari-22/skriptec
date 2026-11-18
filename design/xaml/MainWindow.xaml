@@ -1,0 +1,771 @@
+<Window x:Class="ScriptMaster.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ScriptMaster" Height="720" Width="1200"
+        MinHeight="500" MinWidth="800"
+        Background="{DynamicResource AppBackground}">
+
+    <Window.Resources>
+        <!-- ═══ COLOR PALETTE ═══ -->
+        <Color x:Key="PurpleColor">#534AB7</Color>
+        <Color x:Key="PurpleLightColor">#EEEDFE</Color>
+        <Color x:Key="TealColor">#0F6E56</Color>
+        <Color x:Key="GrayColor">#5F5E5A</Color>
+        <Color x:Key="GrayLightColor">#F1EFE8</Color>
+        <Color x:Key="BackgroundColor">#FFFFFF</Color>
+        <Color x:Key="SurfaceColor">#F7F6F2</Color>
+        <Color x:Key="BorderColor">#E0DED8</Color>
+        <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
+        <Color x:Key="TextSecondaryColor">#5F5E5A</Color>
+        <Color x:Key="SuccessColor">#3B6D11</Color>
+        <Color x:Key="SuccessLightColor">#EAF3DE</Color>
+        <Color x:Key="DangerColor">#A32D2D</Color>
+
+        <SolidColorBrush x:Key="AppBackground"       Color="{StaticResource BackgroundColor}"/>
+        <SolidColorBrush x:Key="SurfaceBrush"        Color="{StaticResource SurfaceColor}"/>
+        <SolidColorBrush x:Key="BorderBrush"         Color="{StaticResource BorderColor}"/>
+        <SolidColorBrush x:Key="PurpleBrush"         Color="{StaticResource PurpleColor}"/>
+        <SolidColorBrush x:Key="PurpleLightBrush"    Color="{StaticResource PurpleLightColor}"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush"    Color="{StaticResource TextPrimaryColor}"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush"  Color="{StaticResource TextSecondaryColor}"/>
+        <SolidColorBrush x:Key="SuccessBrush"        Color="{StaticResource SuccessColor}"/>
+        <SolidColorBrush x:Key="SuccessLightBrush"   Color="{StaticResource SuccessLightColor}"/>
+        <SolidColorBrush x:Key="DangerBrush"         Color="{StaticResource DangerColor}"/>
+
+        <!-- ═══ TYPOGRAPHY ═══ -->
+        <Style x:Key="TextPrimary" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+        <Style x:Key="TextSecondary" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+        </Style>
+        <Style x:Key="TextMono" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Cascadia Code, Consolas"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="TextTransform" Value="Uppercase"/>
+            <Setter Property="Margin" Value="12,8,12,4"/>
+        </Style>
+
+        <!-- ═══ TOOLBAR BUTTON ═══ -->
+        <Style x:Key="ToolbarButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ═══ RUN BUTTON (green) ═══ -->
+        <Style x:Key="RunButton" TargetType="Button" BasedOn="{StaticResource ToolbarButton}">
+            <Setter Property="Background" Value="{StaticResource SuccessLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- ═══ SIDEBAR TREE ITEM ═══ -->
+        <Style x:Key="TreeItemLabel" TargetType="TextBlock"
+               BasedOn="{StaticResource TextSecondary}">
+            <Setter Property="Padding" Value="4,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- ═══ STATUS BADGE ═══ -->
+        <Style x:Key="BadgeSuccess" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SuccessLightBrush}"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="6,2"/>
+        </Style>
+        <Style x:Key="BadgePurple" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PurpleLightBrush}"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="6,2"/>
+        </Style>
+
+        <!-- ═══ SEPARATOR ═══ -->
+        <Style TargetType="Separator">
+            <Setter Property="Background" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- ═══ TAG PILL ═══ -->
+        <Style x:Key="TagPill" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+        </Style>
+
+        <!-- ═══ HISTORY ITEM ═══ -->
+        <Style x:Key="HistoryOk" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
+        </Style>
+        <Style x:Key="HistoryErr" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Title bar / menu -->
+            <RowDefinition Height="*"/>     <!-- Main content -->
+            <RowDefinition Height="Auto"/>  <!-- Status bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             TOP BAR
+        ═══════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+            <DockPanel Height="42" Margin="12,0">
+
+                <!-- Logo -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="0,0,20,0">
+                    <Ellipse Width="20" Height="20" Fill="{StaticResource PurpleBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="ScriptMaster" FontFamily="Segoe UI" FontSize="14"
+                               FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Search -->
+                <Border DockPanel.Dock="Left" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="0.5" CornerRadius="6" Width="260"
+                        Background="{StaticResource AppBackground}"
+                        VerticalAlignment="Center" Margin="0,0,12,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="12" Margin="8,0,6,0" VerticalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox Grid.Column="1" BorderThickness="0" Background="Transparent"
+                                 FontFamily="Segoe UI" FontSize="12" Padding="0,7"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 x:Name="SearchBox" Text=""
+                                 ToolTip="Hľadaj skripty (Ctrl+F)">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Grid>
+                                                    <TextBlock Text="Hľadaj skripty…"
+                                                               FontFamily="Segoe UI" FontSize="12"
+                                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                                               Margin="0,7,0,0" IsHitTestVisible="False">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Value="">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <ScrollViewer x:Name="PART_ContentHost"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Grid>
+                </Border>
+
+                <!-- Right actions -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                            VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0"
+                            ToolTip="Databáza šablón">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7BF;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       Margin="0,0,5,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Šablóny" VerticalAlignment="Center"
+                                       FontFamily="Segoe UI" FontSize="12"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0"
+                            ToolTip="Nastavenia">
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             MAIN AREA  (Sidebar | Editor | MetaPanel)
+        ═══════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" MinWidth="160" MaxWidth="340"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="190" MinWidth="160" MaxWidth="280"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0.5,0">
+                <DockPanel>
+
+                    <!-- Sidebar header -->
+                    <Border DockPanel.Dock="Top" Padding="12,8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                        <DockPanel>
+                            <TextBlock Text="Skripty" FontFamily="Segoe UI" FontSize="12"
+                                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"/>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource ToolbarButton}"
+                                    Width="24" Height="24" Padding="0" ToolTip="Nový zošit">
+                                <TextBlock Text="+" FontSize="16" FontFamily="Segoe UI"
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Button>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Sidebar bottom: New script button -->
+                    <Border DockPanel.Dock="Bottom" Padding="10,8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0.5,0,0">
+                        <Button Style="{StaticResource ToolbarButton}" HorizontalAlignment="Stretch"
+                                ToolTip="Otvoriť sprievodcu tvorbou skriptu">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="+" FontSize="14" Margin="0,0,6,0"
+                                           VerticalAlignment="Center" FontFamily="Segoe UI"/>
+                                <TextBlock Text="Nový skript" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+
+                    <!-- Tree view -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <TreeView x:Name="ScriptTree" BorderThickness="0"
+                                  Background="Transparent" Padding="0,4">
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="IsExpanded" Value="True"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TreeViewItem">
+                                                <StackPanel>
+                                                    <Border x:Name="Bd" Padding="0"
+                                                            Background="Transparent">
+                                                        <ContentPresenter x:Name="PART_Header"
+                                                                          ContentSource="Header"/>
+                                                    </Border>
+                                                    <ItemsPresenter x:Name="ItemsHost"/>
+                                                </StackPanel>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{StaticResource PurpleLightBrush}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background"
+                                                                Value="{StaticResource BorderBrush}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsExpanded" Value="False">
+                                                        <Setter TargetName="ItemsHost" Property="Visibility"
+                                                                Value="Collapsed"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+
+                            <!-- Notebook: DevOps -->
+                            <TreeViewItem>
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal" Margin="8,5,8,5">
+                                        <TextBlock Text="&#xE7C3;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="13" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource PurpleBrush}" Margin="0,0,6,0"/>
+                                        <TextBlock Text="DevOps" FontFamily="Segoe UI" FontSize="12"
+                                                   FontWeight="SemiBold" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+
+                                <!-- Section: Deployment -->
+                                <TreeViewItem>
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="20,4,8,4">
+                                            <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="12" VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Deployment" Style="{StaticResource TreeItemLabel}"/>
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                    <!-- Script items -->
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>
+                                            <Border Background="{StaticResource PurpleLightBrush}" CornerRadius="4">
+                                                <StackPanel Orientation="Horizontal" Margin="32,4,8,4">
+                                                    <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                                               FontSize="11" VerticalAlignment="Center"
+                                                               Foreground="{StaticResource PurpleBrush}" Margin="0,0,6,0"/>
+                                                    <TextBlock Text="deploy-prod.ps1" FontFamily="Segoe UI" FontSize="12"
+                                                               FontWeight="SemiBold" VerticalAlignment="Center"
+                                                               Foreground="{StaticResource PurpleBrush}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="32,4,8,4">
+                                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="11" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                                <TextBlock Text="rollback.sh" Style="{StaticResource TreeItemLabel}"/>
+                                            </StackPanel>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="32,4,8,4">
+                                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="11" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                                <TextBlock Text="build-image.sh" Style="{StaticResource TreeItemLabel}"/>
+                                            </StackPanel>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                </TreeViewItem>
+
+                                <!-- Section: Monitoring -->
+                                <TreeViewItem>
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="20,4,8,4">
+                                            <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="12" VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Monitoring" Style="{StaticResource TreeItemLabel}"/>
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="32,4,8,4">
+                                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="11" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                                <TextBlock Text="check-cpu.py" Style="{StaticResource TreeItemLabel}"/>
+                                            </StackPanel>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                </TreeViewItem>
+                            </TreeViewItem>
+
+                            <!-- Notebook: Domácnosť -->
+                            <TreeViewItem>
+                                <TreeViewItem.Header>
+                                    <StackPanel Orientation="Horizontal" Margin="8,5,8,5">
+                                        <TextBlock Text="&#xE7C3;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="13" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource PurpleBrush}" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Domácnosť" FontFamily="Segoe UI" FontSize="12"
+                                                   FontWeight="SemiBold" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    </StackPanel>
+                                </TreeViewItem.Header>
+                                <TreeViewItem>
+                                    <TreeViewItem.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="20,4,8,4">
+                                            <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="12" VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Zálohy" Style="{StaticResource TreeItemLabel}"/>
+                                        </StackPanel>
+                                    </TreeViewItem.Header>
+                                    <TreeViewItem>
+                                        <TreeViewItem.Header>
+                                            <StackPanel Orientation="Horizontal" Margin="32,4,8,4">
+                                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="11" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,6,0"/>
+                                                <TextBlock Text="backup-docs.ps1" Style="{StaticResource TreeItemLabel}"/>
+                                            </StackPanel>
+                                        </TreeViewItem.Header>
+                                    </TreeViewItem>
+                                </TreeViewItem>
+                            </TreeViewItem>
+                        </TreeView>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- GridSplitter 1 -->
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
+                          Background="{StaticResource BorderBrush}" Cursor="SizeWE"/>
+
+            <!-- ── EDITOR PANEL ─────────────────────────────────────── -->
+            <DockPanel Grid.Column="2">
+
+                <!-- Tab bar -->
+                <Border DockPanel.Dock="Top" Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                    <StackPanel Orientation="Horizontal" Height="36">
+                        <!-- Active tab -->
+                        <Border Background="{StaticResource AppBackground}"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="0,0,0.5,0" Padding="12,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"
+                                           Foreground="{StaticResource PurpleBrush}"/>
+                                <TextBlock Text="deploy-prod.ps1" FontFamily="Segoe UI" FontSize="12"
+                                           FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <Border Background="{StaticResource PurpleLightBrush}"
+                                        CornerRadius="3" Width="6" Height="6"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Inactive tab -->
+                        <Border Padding="12,0" Cursor="Hand"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0.5,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE943;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <TextBlock Text="rollback.sh" FontFamily="Segoe UI" FontSize="12"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Toolbar -->
+                <Border DockPanel.Dock="Top" Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5" Padding="8,5">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource RunButton}" Margin="0,0,4,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Spustiť" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Separator Width="0.5" Margin="4,2"/>
+                        <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Naplánovať" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Kopírovať" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Export" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Separator Width="0.5" Margin="4,2"/>
+                        <Button Style="{StaticResource ToolbarButton}" Margin="4,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="12" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="História" FontFamily="Segoe UI" FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- Status bar (bottom) -->
+                <Border DockPanel.Dock="Bottom" Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0.5,0,0" Padding="10,4">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource BadgePurple}" Margin="0,0,8,0">
+                            <TextBlock Text="PowerShell" FontFamily="Segoe UI" FontSize="10"
+                                       FontWeight="SemiBold" Foreground="{StaticResource PurpleBrush}"/>
+                        </Border>
+                        <Border Style="{StaticResource BadgeSuccess}" Margin="0,0,8,0">
+                            <TextBlock Text="Bez chýb" FontFamily="Segoe UI" FontSize="10"
+                                       FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"/>
+                        </Border>
+                        <TextBlock Text="Riadok 14, St. 1" Style="{StaticResource TextSecondary}"
+                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <TextBlock Text="UTF-8 · CRLF" Style="{StaticResource TextSecondary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Editor area (AvalonEdit placeholder) -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"/>  <!-- Line numbers -->
+                        <ColumnDefinition Width="*"/>   <!-- Code area -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Line numbers -->
+                    <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0.5,0">
+                        <ItemsControl Margin="0,10,0,0">
+                            <ItemsControl.Items>
+                                <TextBlock Text="1"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="2"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="3"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="4"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="5"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="6"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="7"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="8"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="9"  Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="10" Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="11" Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                                <TextBlock Text="12" Style="{StaticResource TextSecondary}" TextAlignment="Right" Padding="0,0,8,0" LineHeight="20"/>
+                            </ItemsControl.Items>
+                        </ItemsControl>
+                    </Border>
+
+                    <!-- NOTE: Replace this TextBox with AvalonEdit TextEditor control -->
+                    <!-- xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/texteditor" -->
+                    <!-- <avalonEdit:TextEditor x:Name="CodeEditor" ... /> -->
+                    <TextBox Grid.Column="1" AcceptsReturn="True" AcceptsTab="True"
+                             BorderThickness="0" FontFamily="Cascadia Code, Consolas"
+                             FontSize="13" Padding="16,10" Background="Transparent"
+                             Foreground="{StaticResource TextPrimaryBrush}"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto"
+                             x:Name="CodeEditor"
+                             Text="# deploy-prod.ps1 – nasadenie do produkcie&#xA;# Vytvoril: Jan Novak  |  Zmenené: 24.5.2026&#xA;&#xA;param(&#xA;    [string]$Environment = &quot;production&quot;,&#xA;    [string]$Version     = &quot;latest&quot;,&#xA;    [switch]$DryRun&#xA;)&#xA;&#xA;$ErrorActionPreference = &quot;Stop&quot;&#xA;$AppName  = &quot;my-app&quot;&#xA;$Registry = &quot;registry.company.com&quot;&#xA;&#xA;Write-Host &quot;Deploying $AppName:$Version → $Environment&quot;&#xA;&#xA;if ($DryRun) {&#xA;    Write-Host &quot;[DRY RUN] Preskakujem deploy&quot; -ForegroundColor Yellow&#xA;    return&#xA;}"/>
+                </Grid>
+            </DockPanel>
+
+            <!-- GridSplitter 2 -->
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Stretch"
+                          Background="{StaticResource BorderBrush}" Cursor="SizeWE"/>
+
+            <!-- ── META PANEL ────────────────────────────────────────── -->
+            <Border Grid.Column="4" Background="{StaticResource SurfaceBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0.5,0,0,0">
+                <DockPanel>
+
+                    <!-- Schedule button (bottom) -->
+                    <Border DockPanel.Dock="Bottom" Padding="10,8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0.5,0,0">
+                        <Button Style="{StaticResource ToolbarButton}" HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="13" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Naplánovať spúšťanie" FontFamily="Segoe UI"
+                                           FontSize="11" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+
+                            <!-- Metadata section -->
+                            <Border Padding="12,10,12,10"
+                                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                                <StackPanel>
+                                    <TextBlock Text="METADÁTA" Style="{StaticResource SectionLabel}" Margin="0,0,0,6"/>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Zošit" Style="{StaticResource TextSecondary}" Grid.Column="0"/>
+                                        <TextBlock Text="DevOps" Style="{StaticResource TextMono}" Grid.Column="1"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Sekcia" Style="{StaticResource TextSecondary}" Grid.Column="0"/>
+                                        <TextBlock Text="Deployment" Style="{StaticResource TextMono}" Grid.Column="1"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Jazyk" Style="{StaticResource TextSecondary}" Grid.Column="0"/>
+                                        <TextBlock Text="PS1" Style="{StaticResource TextMono}" Grid.Column="1"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Veľkosť" Style="{StaticResource TextSecondary}" Grid.Column="0"/>
+                                        <TextBlock Text="1.2 KB" Style="{StaticResource TextMono}" Grid.Column="1"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Tags section -->
+                            <Border Padding="12,10,12,10"
+                                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                                <StackPanel>
+                                    <TextBlock Text="TAGY" Style="{StaticResource SectionLabel}" Margin="0,0,0,6"/>
+                                    <WrapPanel>
+                                        <Border Style="{StaticResource TagPill}">
+                                            <TextBlock Text="deploy" FontFamily="Cascadia Code, Consolas"
+                                                       FontSize="10" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        </Border>
+                                        <Border Style="{StaticResource TagPill}">
+                                            <TextBlock Text="prod" FontFamily="Cascadia Code, Consolas"
+                                                       FontSize="10" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        </Border>
+                                        <Border Style="{StaticResource TagPill}">
+                                            <TextBlock Text="docker" FontFamily="Cascadia Code, Consolas"
+                                                       FontSize="10" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        </Border>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Run history section -->
+                            <Border Padding="12,10,12,10">
+                                <StackPanel>
+                                    <TextBlock Text="POSLEDNÉ SPUSTENIA" Style="{StaticResource SectionLabel}" Margin="0,0,0,6"/>
+
+                                    <!-- Run item 1: OK -->
+                                    <Border Padding="0,6,0,6"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="✓ OK" Style="{StaticResource HistoryOk}"/>
+                                                <TextBlock Text="trvanie 12s" Style="{StaticResource TextSecondary}" FontSize="10"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="dnes 09:14"
+                                                       Style="{StaticResource TextSecondary}" FontSize="10"
+                                                       VerticalAlignment="Top"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Run item 2: Error -->
+                                    <Border Padding="0,6,0,6"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,0.5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="✗ Chyba" Style="{StaticResource HistoryErr}"/>
+                                                <TextBlock Text="Exit code 1" Style="{StaticResource TextSecondary}" FontSize="10"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="23.5. 18:02"
+                                                       Style="{StaticResource TextSecondary}" FontSize="10"
+                                                       VerticalAlignment="Top"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Run item 3: OK -->
+                                    <Border Padding="0,6,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="✓ OK" Style="{StaticResource HistoryOk}"/>
+                                                <TextBlock Text="trvanie 9s" Style="{StaticResource TextSecondary}" FontSize="10"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="22.5. 10:30"
+                                                       Style="{StaticResource TextSecondary}" FontSize="10"
+                                                       VerticalAlignment="Top"/>
+                                        </Grid>
+                                    </Border>
+
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             STATUS BAR
+        ═══════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0.5,0,0" Padding="12,4">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="ScriptMaster v1.0"
+                           Style="{StaticResource TextSecondary}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="7" Height="7" Fill="{StaticResource SuccessBrush}" Margin="0,0,6,0"/>
+                    <TextBlock Text="Pripravený" Style="{StaticResource TextSecondary}"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
