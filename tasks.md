@@ -39,23 +39,21 @@
 ## 🟡 Fáza 2 — Správa skriptov (prvý funkčný kód)
 
 ### Dátové modely (`Skriptec.Core/Models/`)
-- [ ] `Workspace.cs` — zoznam Notebooks, metadata
-- [ ] `Notebook.cs` — zoznam Sections
-- [ ] `Section.cs` — zoznam Scripts
-- [ ] `Script.cs` — metadata, relativePath, currentVersion, deployedVersion, syncId
-- [ ] `Schedule.cs` — triggerType, cronExpr, deployedFile, parameters
-- [ ] `Run.cs` — startedAt, duration, exitCode, output
-- [ ] `AppConfig.cs` — globálne nastavenia, zoznam workspaces
+- [x] `WorkspaceData` / `Notebook` / `Section` / `Script` (`WorkspaceData.cs`) — M1
+- [x] `Schedule`, `ScheduleTrigger`, `ScheduleFile` (`ScheduleFile.cs`) — M1
+- [x] `Run`, `RunFile` (`RunFile.cs`) — M1
+- [x] `AppConfig`, `WorkspaceRef` (`AppConfig.cs`), `ScriptLanguage`, `EntityBase`/`Ids` — M1
 
 ### WorkspaceService (`Skriptec.Core/Services/`)
-- [ ] `WorkspaceService.cs`:
-  - [ ] `LoadAsync()` — načítanie `workspace.json`
-  - [ ] `SaveAsync()` — atomický zápis cez `.tmp` súbor
-  - [ ] `AddRunAsync(Run)` — append do `runs/YYYY-MM.json`
-  - [ ] `LoadSchedulesAsync()` — načítanie `schedules.json`
-  - [ ] `SaveSchedulesAsync()` — uloženie plánov
-- [ ] `ConfigService.cs` — čítanie/zápis `%AppData%\Skriptec\config.json`
-- [ ] Vytvorenie `.skriptec/` priečinka ak neexistuje (vrátane `runs/` podpriečinka)
+- [x] `JsonStore` (`Storage/`) — atomický zápis, `.bak`, kontrola `version`, zámky + retry — M1
+- [x] `WorkspaceService.cs` — M1:
+  - [x] `OpenOrCreateAsync()` — vytvorí `.skriptec/`, `runs/`, `workspace.json`, `schedules.json`
+  - [x] `LoadAsync()` / `SaveAsync()`
+  - [x] `AddRunAsync(Run)` / `GetRunsAsync(scriptId, take)`
+  - [x] `LoadSchedulesAsync()` / `SaveSchedulesAsync()`
+  - [x] CRUD Notebook / Section / Script, `FindScript`, `GetAbsolutePath`
+- [x] `ConfigService.cs` — čítanie/zápis `%AppData%\Skriptec\config.json`, add/remove/activate workspace — M1
+- [x] Xunit testy (`Skriptec.Core.Tests`, 16 testov zelených) — M1
 
 ### UI — Strom hierarchie
 - [ ] `MainViewModel.cs` — ObservableCollection pre strom, aktívny workspace
@@ -183,6 +181,9 @@
 
 | Otázka | Priorita | Poznámka |
 |--------|----------|----------|
+| Súbežný zápis do `runs/` (Runner + app) | Vyriešené (M1) | `JsonStore` serializuje zápisy cez `SemaphoreSlim` (v procese) + lock súbor `*.lock` (medzi procesmi), retry 3× pri `IOException` |
+| `AddWorkspaceAsync` aktivuje pridaný workspace | Rozhodnutie (M1) | Predpoklad: po „Pridať workspace…" sa naň rovno prepne; rovnaká cesta = len aktivácia |
+| `WorkspaceRef.Id` prefix | Rozhodnutie (M1) | Plán prefix neuvádza; použité `ws_` podľa `architecture.md` |
 | AvalonEditB XML namespace | Vyriešené (M0) | Plán uvádza `.../texteditor`, balík 2.5.0 používa `http://icsharpcode.net/sharpdevelop/avalonedit` – použitý ten |
 | `TextTransform` v štýle `SectionLabel` | Vyriešené (M0) | Vlastnosť vo WPF neexistuje; odstránená, popisky sú písané VERZALKAMI priamo v XAML |
 | `dotnet` nie je v PATH | Nízka | SDK 10.0.404 je v `C:\Program Files\dotnet`; treba pridať do PATH, resp. reštartovať terminál |

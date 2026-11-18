@@ -15,16 +15,17 @@ Windows desktop aplikácia (WPF / .NET 10 / C#) na centralizovanú správu, orga
 
 ## Aktuálny stav projektu
 
-**Fáza:** Vývoj MVP — etapa M0 (Solution setup) dokončená, ďalej M1 (Modely + WorkspaceService + ConfigService) podľa `MVP-PLAN.md`
+**Fáza:** Vývoj MVP — etapa M0 a M1 dokončené, ďalej M2 (Strom hierarchie + CRUD v UI) podľa `MVP-PLAN.md`. Vývoj prebieha vo vetve `dev`.
 
 Dokončené:
+- M1: modely, `JsonStore`, `ConfigService`, `WorkspaceService`, 16 xunit testov
 - M0: solution, 4 projekty, NuGet balíky, štýly v `Resources/Styles/`, layout MainWindow
 - Architektonické rozhodnutia (viď `decisions.md`)
 - Dátový model (JSON súbory — bez SQLite)
 - WPF XAML mockupy (MainWindow, Scheduler, Wizard)
 - Projektová dokumentácia
 
-Ďalší krok: **M1** — modely, `JsonStore`, `ConfigService`, `WorkspaceService` + xUnit testy
+Ďalší krok: **M2** — `MainViewModel`, TreeView s CRUD, workspaces, import, drag & drop
 
 ---
 
